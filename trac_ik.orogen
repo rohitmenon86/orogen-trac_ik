@@ -2,20 +2,17 @@ name "trac_ik"
 # Optionally declare the version number
 # version "0.1"
 
-# If new data types need to be defined, they have to be put in a separate C++
-# header, and this header will be loaded here
-import_types_from "trac_ikTypes.hpp"
-# Finally, it is pretty common that headers are directly loaded from an external
-# library. In this case, the library must be first used (the name is the
-# library's pkg-config name) and then the header can be used. Following Rock
-# conventions, a common use-case would be:
-#
-# using_library "trac_ik"
+import_types_from "base"
+
+using_library "trac_ik"
+using_library "kdl_conversions"
 # import_types_from "trac_ik/CustomType.hpp"
 
 
 task_context "IKSolverTask" do
     needs_configuration
+
+    runtime_states 'NO_JOINT_STATUS', 'NO_IK_SOLUTION', 'IK_SOLUTION_FOUND', 'CARTESIAN_POSE_RECEIVED'
 
     property("urdf_filepath", "std/string").
     doc("Robot urdf filepath for extracting joint limits")  
@@ -38,6 +35,8 @@ task_context "IKSolverTask" do
 
     output_port("out_joint_commands", "base/commands/Joints").
     doc("Desired joint commands")
+
+    output_port("out_no_solution", "int")
 
     periodic 0.1
 end
